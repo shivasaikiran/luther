@@ -1,9 +1,12 @@
-import { Html, Head, Main, NextScript } from "next/document";
+import Document, { Html, Head, Main, NextScript } from "next/document";
 
-export default function Document() {
+export default function MyDocument() {
   return (
     <Html lang="en">
-      <Head />
+      <Head>
+      <meta name="description" content="ecommerce "/>
+    
+      </Head>
       <body>
         <Main />
         <NextScript />
