@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { auth } from '@/Firebase/config'; // Ensure Firebase is correctly configured
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { FaSearch, FaMapMarkerAlt, FaSyncAlt, FaHeart, FaShoppingCart, FaUser, FaBars, FaChevronDown, FaTimes,FaPhoneAlt } from 'react-icons/fa';
 import logo from './images/logo.webp';
 import Image from 'next/image';
@@ -7,11 +9,27 @@ import { CgTrack } from "react-icons/cg";
 import Link from 'next/link'; // Import the Link component from Next.js
 
 const Header = () => {
+  const [user, setUser] = useState(null);
+  
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState({ about: false, shop: false, vendors: false, blog: false });
 
   const toggleDropdown = (menu) => {
     setDropdownOpen(prev => ({ ...prev, [menu]: !prev[menu] }));
+  };
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (
@@ -66,10 +84,23 @@ const Header = () => {
               <FaShoppingCart />
               <span>Cart</span>
             </Link>
-            <Link href="/Login" className="flex items-center space-x-2 hover:text-green-500">
-              <FaUser />
-              <span>Account</span>
-            </Link>
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <FaUser className="text-gray-500" />
+                <span>{user.displayName || user.email}</span>
+                <button
+                  onClick={handleSignOut}
+                  className="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link href="/Authoption" className="flex items-center space-x-2 hover:text-green-500">
+                <FaUser />
+                <span>Account</span>
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -192,9 +223,23 @@ const Header = () => {
           </Link>
         </div>
         <div className="flex items-center p-4 space-x-4">
-          <Link href="/Login" className="hover:text-green-500">
-            <FaUser />
-          </Link>
+        {user ? (
+              <div className="flex items-center space-x-2">
+                <FaUser className="text-gray-500" />
+                <span>{user.displayName || user.email}</span>
+                <button
+                  onClick={handleSignOut}
+                  className="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link href="/Authoption" className="flex items-center space-x-2 hover:text-green-500">
+                <FaUser />
+                <span>Account</span>
+              </Link>
+            )}
           <Link href="/wishlist" className="hover:text-green-500">
             <FaHeart />
           </Link>

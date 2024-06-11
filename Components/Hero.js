@@ -17,7 +17,8 @@ const Hero = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 2000, // 2 seconds
+    autoplaySpeed: 2000
+    , // 2 seconds
   };
 
   return (
